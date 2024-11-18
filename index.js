@@ -1,31 +1,39 @@
-const express=require("express");
-const connectDB=require('./config/db.js');
-const cors=require("cors");
-const productRouter=require("./routes/products.js");
+const express = require('express');
+const connectDB = require('./config/db.js');
+const cors = require('cors');
+const productRouter = require('./routes/products.js');
 
-const app=express();
+const app = express();
 
-const PORT=8000;
-// middlewares
+// Use Railway-assigned port or default to 8000
+const PORT = process.env.PORT || 8000;
+
+// Middlewares
 app.use(express.json());
 app.use(cors());
 
-// database connection
+// Database connection
 connectDB();
 
-app.get("/",(req,res)=>{
-    res.status(200).send("hello from home route");
+// Routes
+app.get('/', (req, res) => {
+    res.status(200).send('Hello from home route');
+});
 
-})
+app.use('/products', productRouter);
 
-app.use("/products",productRouter);
-
-app.use((req, res, next) => {
+// Handle undefined routes
+app.use((req, res) => {
     res.status(404).send('Route not found');
-  });
-  
+});
 
+// Global error handler
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something went wrong on the server!');
+});
 
-app.listen(PORT,()=>{
-    console.log(`your server is running on ${PORT}`);
-})
+// Start server
+app.listen(PORT, () => {
+    console.log(`Your server is running on port ${PORT}`);
+});
