@@ -20,6 +20,10 @@ app.get("/",(req,res)=>{
 
 app.use("/products",productRouter);
 
+app.use((req, res, next) => {
+    res.status(404).send('Route not found');
+  });
+  
 
 
 app.listen(PORT,()=>{
